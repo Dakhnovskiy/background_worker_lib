@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from redis import Redis
+from .job import Job
 
 
 class Queue:
@@ -16,4 +17,4 @@ class Queue:
         :param kwargs: именованные аргументы функции
         """
 
-        pass
+        job = Job(func, *args, **kwargs)
