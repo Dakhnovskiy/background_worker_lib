@@ -1,16 +1,32 @@
 # -*- coding: utf-8 -*-
-import json
+import pickle
 
 
 class Job:
 
     @property
     def args(self):
-        return self.__args_dump
+        return self.__args
 
     @property
     def kwargs(self):
-        return self.__kwargs_dump
+        return self.__kwargs
+
+    @property
+    def func(self):
+        return self.__func
+
+    @property
+    def args_dump(self):
+        return pickle.dumps(self.args)
+
+    @property
+    def kwargs_dump(self):
+        return pickle.dumps(self.kwargs)
+
+    @property
+    def func_dump(self):
+        return pickle.dumps(self.func)
 
     def __init__(self, func, *args, **kwargs):
         """
@@ -20,5 +36,5 @@ class Job:
         """
 
         self.__func = func
-        self.__args_dump = json.dumps(args)
-        self.__kwargs_dump = json.dumps(kwargs)
+        self.__args = args
+        self.__kwargs = kwargs

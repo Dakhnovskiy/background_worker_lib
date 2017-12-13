@@ -55,5 +55,6 @@ class Queue:
         job_id = self.next_job_id
 
         self.__connect.rpush(self.jobs_key, job_id)
-        self.__connect.rpush(self.job_prefix.format(job_id, 'args'), job.args)
-        self.__connect.rpush(self.job_prefix.format(job_id, 'kwargs'), job.kwargs)
+        self.__connect.rpush(self.job_prefix.format(job_id, 'args'), job.args_dump)
+        self.__connect.rpush(self.job_prefix.format(job_id, 'kwargs'), job.kwargs_dump)
+        self.__connect.rpush(self.job_prefix.format(job_id, 'func'), job.func_dump)

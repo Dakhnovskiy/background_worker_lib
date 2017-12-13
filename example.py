@@ -5,7 +5,7 @@ from background_worker_lib import Queue
 
 
 def foo(a, b):
-    return a + b
+    print(a + b)
 
 
 if __name__ == '__main__':
@@ -14,4 +14,4 @@ if __name__ == '__main__':
     q.add(foo, 1, 2)
 
     q2 = Queue(connect=r, name='q2')
-    q2.add(foo, 1, 2)
+    q2.add(foo, 5, 6)
