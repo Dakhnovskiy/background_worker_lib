@@ -10,7 +10,7 @@ def test_create_queue(redis_instance):
 
 
 def test_queue_has_method_add():
-    assert (hasattr(Queue, 'add'))
+    assert hasattr(Queue, 'add')
 
 
 def test_add(redis_instance, add_test_params):
