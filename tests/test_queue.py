@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
 
 import pytest
+import sys
+import os
 
 from redis import Redis
+
+LIBRARY_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)))
+sys.path.append(LIBRARY_DIR)
 from background_worker_lib import Queue
 
 
