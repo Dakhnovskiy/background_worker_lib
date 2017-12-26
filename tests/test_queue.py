@@ -1,37 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import pytest
-import sys
-import os
+from fixtures import redis_instance, add_test_params
 
-from redis import Redis
-
-LIBRARY_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)))
-sys.path.append(LIBRARY_DIR)
 from background_worker_lib import Queue
-
-
-@pytest.fixture(scope='function')
-def redis_instance():
-    return Redis()
-
-
-def foo(*args, **kwargs):
-    pass
-
-
-@pytest.fixture(
-    scope='function',
-    params=[
-        {'function': foo, 'args': (), 'kwargs': {}},
-        {'function': foo, 'args': (1, 2), 'kwargs': {}},
-        {'function': foo, 'args': (), 'kwargs': {'a': 1, 'b': 2}},
-        {'function': foo, 'args': (1, 2, 3), 'kwargs': {'a': 1, 'b': 2, 'c': 3}},
-    ],
-    ids=['without_arguments', 'with_args', 'with_kwargs', 'with_args_and_kwargs']
-)
-def add_test_params(request):
-    return request.param
 
 
 def test_create_queue(redis_instance):
