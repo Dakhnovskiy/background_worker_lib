@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import traceback
+
 from redis import Redis
 from ..queue import Queue
 
@@ -10,6 +12,12 @@ class Worker:
         self.queue = Queue(connect=connect, name=name_queue)
 
     def start(self):
-        queue_name = '%s%s' % (self.prefix, list(self.tasks.keys())[0])
+
         while True:
-            raw_tasks_info = self.redis_client.blpop(queue_name)
+            job_id = self.queue.pop_job_id()
+            try:
+                job = self.queue.pop_job(job_id)
+                job.execute()
+            except:
+                # TODO: использовать logging
+                traceback.print_exc()

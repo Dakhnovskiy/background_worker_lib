@@ -38,3 +38,6 @@ class Job:
         self.__func = func
         self.__args = args
         self.__kwargs = kwargs
+
+    def execute(self):
+        self.__func(*self.__args, **self.kwargs)

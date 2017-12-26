@@ -65,12 +65,17 @@ class Queue:
         self.__connect.rpush(self.__get_job_field_name(job_id, 'func'), job.func_dump)
 
     def pop_job_id(self):
-        return self.__connect.blpop(self.jobs_key)
+        job_id = self.__connect.blpop(self.jobs_key)
+        return int(job_id[1].decode('utf-8'))
 
     def pop_job(self, job_id):
         raw_args = self.__connect.lpop(self.__get_job_field_name(job_id, 'args'))
         raw_kwargs = self.__connect.lpop(self.__get_job_field_name(job_id, 'kwargs'))
         raw_func = self.__connect.lpop(self.__get_job_field_name(job_id, 'func'))
+
+        print(pickle.loads(raw_args))
+        print(pickle.loads(raw_kwargs))
+        print(raw_func)
 
         args = pickle.loads(raw_args)
         kwargs = pickle.loads(raw_kwargs)

@@ -9,9 +9,9 @@ def foo(a, b):
 
 
 if __name__ == '__main__':
-    r = Redis()
-    q = Queue(connect=r)
+    redis_connect = Redis()
+    q = Queue(connect=redis_connect)
     q.add(foo, 1, 2)
 
-    q2 = Queue(connect=r, name='q2')
+    q2 = Queue(connect=redis_connect, name='q2')
     q2.add(foo, 5, 6)
