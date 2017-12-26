@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+
+import pickle
 from redis import Redis
 from .job import Job
 
@@ -38,6 +40,9 @@ class Queue:
         job_id = self.__connect.get(self.job_id_key)
         if job_id is None:
             self.__connect.set(self.job_id_key, 0)
+            
+    def __get_job_field_name(self, job_id, field_name):
+        return self.job_prefix.format(job_id, field_name)
 
     def add(self, func, *args, **kwargs):
         """
@@ -55,6 +60,19 @@ class Queue:
         job_id = self.next_job_id
 
         self.__connect.rpush(self.jobs_key, job_id)
-        self.__connect.rpush(self.job_prefix.format(job_id, 'args'), job.args_dump)
-        self.__connect.rpush(self.job_prefix.format(job_id, 'kwargs'), job.kwargs_dump)
-        self.__connect.rpush(self.job_prefix.format(job_id, 'func'), job.func_dump)
+        self.__connect.rpush(self.__get_job_field_name(job_id, 'args'), job.args_dump)
+        self.__connect.rpush(self.__get_job_field_name(job_id, 'kwargs'), job.kwargs_dump)
+        self.__connect.rpush(self.__get_job_field_name(job_id, 'func'), job.func_dump)
+
+    def pop_job_id(self):
+        return self.__connect.blpop(self.jobs_key)
+
+    def pop_job(self, job_id):
+        raw_args = self.__connect.lpop(self.__get_job_field_name(job_id, 'args'))
+        raw_kwargs = self.__connect.lpop(self.__get_job_field_name(job_id, 'kwargs'))
+        raw_func = self.__connect.lpop(self.__get_job_field_name(job_id, 'func'))
+
+        args = pickle.loads(raw_args)
+        kwargs = pickle.loads(raw_kwargs)
+        func = pickle.loads(raw_func)
+        return Job(func, *args, **kwargs)

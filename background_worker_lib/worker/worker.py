@@ -10,4 +10,6 @@ class Worker:
         self.queue = Queue(connect=connect, name=name_queue)
 
     def start(self):
-        pass
+        queue_name = '%s%s' % (self.prefix, list(self.tasks.keys())[0])
+        while True:
+            raw_tasks_info = self.redis_client.blpop(queue_name)
