@@ -18,3 +18,7 @@ def test_worker_instance_has_attribute_queue(redis_instance):
 
 def test_worker_has_start_method():
     assert hasattr(Worker, 'start')
+
+
+def test_worker_has_execute_job_method():
+    assert hasattr(Worker, 'execute_job')

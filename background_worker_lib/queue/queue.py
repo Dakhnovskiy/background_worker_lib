@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import pickle
+from .helpers_serialize import loads, dumps
 from redis import Redis
-from .job import Job
 
 
 class Queue:
@@ -44,40 +43,44 @@ class Queue:
     def __get_job_field_name(self, job_id, field_name):
         return self.job_prefix.format(job_id, field_name)
 
-    def add(self, func, *args, **kwargs):
+    def __lpop(self, key):
+        return self.__connect.lpop(key)
+
+    def __rpush(self, key, value):
+        return self.__connect.rpush(key, value)
+
+    def add(self, job_name, *args, **kwargs):
         """
         Добавить "задачу" в очередь
-        :param func: функция для выполнения в фоновом режиме
+        :param job_name: название джоба на стороне воркера
         :param args: позиционные аргументы функции
         :param kwargs: именованные аргументы функции
         """
 
-        assert callable(func), 'func must be callable'
-
         self.__connect.sadd(self.__queues_key, self.__key)
 
-        job = Job(func, *args, **kwargs)
         job_id = self.next_job_id
 
-        self.__connect.rpush(self.jobs_key, job_id)
-        self.__connect.rpush(self.__get_job_field_name(job_id, 'args'), job.args_dump)
-        self.__connect.rpush(self.__get_job_field_name(job_id, 'kwargs'), job.kwargs_dump)
-        self.__connect.rpush(self.__get_job_field_name(job_id, 'func'), job.func_dump)
+        self.__rpush(self.__get_job_field_name(job_id, 'args'), dumps(args))
+        self.__rpush(self.__get_job_field_name(job_id, 'kwargs'), dumps(kwargs))
+        self.__rpush(self.__get_job_field_name(job_id, 'job_name'), dumps(job_name))
+        self.__rpush(self.jobs_key, job_id)
 
     def pop_job_id(self):
         job_id = self.__connect.blpop(self.jobs_key)
         return int(job_id[1].decode('utf-8'))
 
     def pop_job(self, job_id):
-        raw_args = self.__connect.lpop(self.__get_job_field_name(job_id, 'args'))
-        raw_kwargs = self.__connect.lpop(self.__get_job_field_name(job_id, 'kwargs'))
-        raw_func = self.__connect.lpop(self.__get_job_field_name(job_id, 'func'))
+        raw_args = self.__lpop(self.__get_job_field_name(job_id, 'args'))
+        raw_kwargs = self.__lpop(self.__get_job_field_name(job_id, 'kwargs'))
+        raw_job_name = self.__lpop(self.__get_job_field_name(job_id, 'job_name'))
 
-        print(pickle.loads(raw_args))
-        print(pickle.loads(raw_kwargs))
-        print(raw_func)
+        args = loads(raw_args)
+        kwargs = loads(raw_kwargs)
+        job_name = loads(raw_job_name)
 
-        args = pickle.loads(raw_args)
-        kwargs = pickle.loads(raw_kwargs)
-        func = pickle.loads(raw_func)
-        return Job(func, *args, **kwargs)
+        return {
+            'job_name': job_name,
+            'args': args,
+            'kwargs': kwargs
+        }

@@ -9,17 +9,13 @@ def redis_instance():
     return Redis()
 
 
-def foo(*args, **kwargs):
-    pass
-
-
 @pytest.fixture(
     scope='function',
     params=[
-        {'function': foo, 'args': (), 'kwargs': {}},
-        {'function': foo, 'args': (1, 2), 'kwargs': {}},
-        {'function': foo, 'args': (), 'kwargs': {'a': 1, 'b': 2}},
-        {'function': foo, 'args': (1, 2, 3), 'kwargs': {'a': 1, 'b': 2, 'c': 3}},
+        {'job_name': 'add', 'args': (), 'kwargs': {}},
+        {'job_name': 'add', 'args': (1, 2), 'kwargs': {}},
+        {'job_name': 'foo', 'args': (), 'kwargs': {'a': 1, 'b': 2}},
+        {'job_name': 'foo', 'args': (1, 2, 3), 'kwargs': {'a': 1, 'b': 2, 'c': 3}},
     ],
     ids=['without_arguments', 'with_args', 'with_kwargs', 'with_args_and_kwargs']
 )
