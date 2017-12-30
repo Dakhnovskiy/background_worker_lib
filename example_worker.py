@@ -11,5 +11,5 @@ job_map = {
 
 if __name__ == '__main__':
     redis_connect = Redis()
-    worker = Worker(connect=redis_connect, name_queue='queue_add', job_map=job_map)
+    worker = Worker(connect=redis_connect, name_queue='queue_add_mult', job_map=job_map)
     worker.start()
