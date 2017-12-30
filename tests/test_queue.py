@@ -21,6 +21,8 @@ def test_add(redis_instance, test_params):
         *test_params['args'],
         **test_params['kwargs']
     )
+    # TODO: проверка, что в редис добавилась инфа о джобах
+    # TODO: убрать из redis добавленную инфу
 
 
 def test_queue_has_method_pop_job_id():
