@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import pytest
 
-from fixtures import redis_instance, add_test_params
+from fixtures import redis_instance, test_params
 
 from background_worker_lib import Queue
 
@@ -14,12 +14,12 @@ def test_queue_has_method_add():
     assert hasattr(Queue, 'add')
 
 
-def test_add(redis_instance, add_test_params):
+def test_add(redis_instance, test_params):
     queue = Queue(connect=redis_instance)
     queue.add(
-        add_test_params['job_name'],
-        *add_test_params['args'],
-        **add_test_params['kwargs']
+        test_params['job_name'],
+        *test_params['args'],
+        **test_params['kwargs']
     )
 
 
