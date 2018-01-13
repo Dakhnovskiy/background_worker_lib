@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import traceback
-
 from redis import Redis
 from ..queue import Queue
 
@@ -20,9 +18,5 @@ class Worker:
 
         while True:
             job_id = self.queue.pop_job_id()
-            try:
-                job_info = self.queue.pop_job(job_id)
-                self.execute_job(**job_info)
-            except:
-                # TODO: использовать logging
-                traceback.print_exc()
+            job_info = self.queue.pop_job(job_id)
+            self.execute_job(**job_info)
